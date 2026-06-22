@@ -1,4 +1,4 @@
-package com.jesus.stockflow.entities;
+package com.jesus.stockflow.entities.enums;
 
 public enum TipoMovimiento {
     ENTRADA,

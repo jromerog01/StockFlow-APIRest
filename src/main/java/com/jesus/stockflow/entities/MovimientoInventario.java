@@ -1,5 +1,6 @@
 package com.jesus.stockflow.entities;
 
+import com.jesus.stockflow.entities.enums.TipoMovimiento;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -25,14 +26,18 @@ public class MovimientoInventario {
     private int cantidad;
     private LocalDateTime fecha;
 
-    public MovimientoInventario(Producto producto, TipoMovimiento tipoMovimiento, int cantidad, LocalDateTime fecha) {
+    public MovimientoInventario(Producto producto, TipoMovimiento tipoMovimiento, int cantidad) {
         this.producto = producto;
         this.tipoMovimiento = tipoMovimiento;
         this.cantidad = cantidad;
-        this.fecha = fecha;
     }
 
     public MovimientoInventario() {
+    }
+
+    @PrePersist
+    public void fechaActual(){
+        setFecha(LocalDateTime.now());
     }
 
     public int getIdMovimiento() {

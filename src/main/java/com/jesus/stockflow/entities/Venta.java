@@ -1,5 +1,6 @@
 package com.jesus.stockflow.entities;
 
+import com.jesus.stockflow.entities.enums.MetodoPago;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -24,14 +25,18 @@ public class Venta {
     private BigDecimal subtotal;
     private BigDecimal total;
 
-    public Venta(LocalDateTime fecha, MetodoPago metodoPago, BigDecimal subtotal, BigDecimal total) {
-        this.fecha = fecha;
+    public Venta(MetodoPago metodoPago, BigDecimal subtotal, BigDecimal total) {
         this.metodoPago = metodoPago;
         this.subtotal = subtotal;
         this.total = total;
     }
 
     public Venta() {
+    }
+
+    @PrePersist
+    public void fechaActual(){
+        setFecha(LocalDateTime.now());
     }
 
     public int getIdVenta() {
