@@ -1,8 +1,7 @@
 package com.jesus.stockflow.services.implementations;
 
 import com.jesus.stockflow.entities.Categoria;
-import com.jesus.stockflow.entities.dtos.CategoriaDTO;
-import com.jesus.stockflow.exceptions.IdCategoriaInvalid;
+import com.jesus.stockflow.exceptions.IdInvalidoException;
 import com.jesus.stockflow.exceptions.NombreInvalidoException;
 import com.jesus.stockflow.repositories.CategoriaRepository;
 import com.jesus.stockflow.services.interfaces.CategoriaService;
@@ -12,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.jesus.stockflow.services.implementations.MetodosAuxiliares.capitalizarPalabra;
+import static com.jesus.stockflow.services.implementations.MetodosAuxiliares.validarPalabra;
 
 @Service
 public class ImplCategoriaService implements CategoriaService {
@@ -27,8 +29,8 @@ public class ImplCategoriaService implements CategoriaService {
 
     @Override
     @Transactional
-    public Categoria crearCategoria(Categoria categoria) {
-        if(validarNombre(categoria.getNombre())){
+    public Categoria save(Categoria categoria) {
+        if(validarPalabra(categoria.getNombre())){
             String nombreCapitalizado = capitalizarPalabra(categoria.getNombre());
             categoria.setNombre(nombreCapitalizado);
 
@@ -47,17 +49,17 @@ public class ImplCategoriaService implements CategoriaService {
             return categoria.get();
         }
 
-        throw new IdCategoriaInvalid("El id de la categoria que quieres buscar es invalido, no hay" +
+        throw new IdInvalidoException("El id de la categoria que quieres buscar es invalido, no hay" +
                 "ninguna categoria con ese id");
     }
 
     @Override
     @Transactional
-    public int actualizarCategoria(int id, CategoriaDTO nombre) {
+    public int update(int id, Categoria nombre) {
         findById(id); //verificar que exista la categoria
-        if (validarNombre(nombre.getNombre())){
+        if (validarPalabra(nombre.getNombre())){
             String nombreCapitalizado = capitalizarPalabra(nombre.getNombre());
-            return repository.actualizarCategoria(id, nombreCapitalizado);
+            return repository.update(id, nombreCapitalizado);
         }
 
         throw new NombreInvalidoException("El nombre ingresado no puede estar vacio");
@@ -66,24 +68,12 @@ public class ImplCategoriaService implements CategoriaService {
 
     @Override
     @Transactional
-    public Categoria eliminarCategoria(int id) {
+    public Categoria delete(int id) {
         Categoria categoria = findById(id);
         repository.delete(categoria);
         return categoria;
     }
 
-    private boolean validarNombre(String nombre){
-        if (nombre.isEmpty() || nombre.equals(" ")){
-            throw new NombreInvalidoException("El nombre ingresado no puede estar vacio");
-        }
-        return true;
-    }
 
-    private String capitalizarPalabra(String palabra){
-        String resto = palabra.substring(1).toLowerCase();
-        char primera = Character.toUpperCase(palabra.charAt(0));
-
-        return primera + resto;
-    }
 
 }

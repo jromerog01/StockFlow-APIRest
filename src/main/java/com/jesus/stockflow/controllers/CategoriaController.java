@@ -1,7 +1,6 @@
 package com.jesus.stockflow.controllers;
 
 import com.jesus.stockflow.entities.Categoria;
-import com.jesus.stockflow.entities.dtos.CategoriaDTO;
 import com.jesus.stockflow.services.interfaces.CategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +20,8 @@ public class CategoriaController {
     }
 
     @PostMapping
-    public Categoria crearCategoria(@RequestBody Categoria categoria){
-        return service.crearCategoria(categoria);
+    public Categoria save(@RequestBody Categoria categoria){
+        return service.save(categoria);
     }
 
     @GetMapping("/{id}")
@@ -31,13 +30,13 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    public int actualizarCategoria(@PathVariable int id, @RequestBody CategoriaDTO nombre){
-        return service.actualizarCategoria(id, nombre);
+    public int update(@PathVariable int id, @RequestBody Categoria nombre){
+        return service.update(id, nombre);
     }
 
     @DeleteMapping("/{id}")
-    public Categoria eliminarCategoria(@PathVariable int id){
-        return service.eliminarCategoria(id);
+    public Categoria delete(@PathVariable int id){
+        return service.delete(id);
     }
 
 
