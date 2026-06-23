@@ -28,10 +28,14 @@ public class ImplCategoriaService implements CategoriaService {
     @Override
     @Transactional
     public Categoria crearCategoria(Categoria categoria) {
-        String nombre = categoria.getNombre().toLowerCase();
+        if(validarNombre(categoria.getNombre())){
+            String nombreCapitalizado = capitalizarPalabra(categoria.getNombre());
+            categoria.setNombre(nombreCapitalizado);
 
+            return repository.save(categoria);
+        }
 
-        return repository.save(categoria);
+        throw new NombreInvalidoException("El nombre que ingresaste es invalido, no puede ser vacio");
     }
 
     @Override
@@ -50,13 +54,22 @@ public class ImplCategoriaService implements CategoriaService {
     @Override
     @Transactional
     public int actualizarCategoria(int id, CategoriaDTO nombre) {
-        findById(id);
+        findById(id); //verificar que exista la categoria
         if (validarNombre(nombre.getNombre())){
-            String nombreMinuscualas = nombre.getNombre().toLowerCase();
-            return repository.actualizarCategoria(id, nombreMinuscualas);
+            String nombreCapitalizado = capitalizarPalabra(nombre.getNombre());
+            return repository.actualizarCategoria(id, nombreCapitalizado);
         }
 
         throw new NombreInvalidoException("El nombre ingresado no puede estar vacio");
+    }
+
+
+    @Override
+    @Transactional
+    public Categoria eliminarCategoria(int id) {
+        Categoria categoria = findById(id);
+        repository.delete(categoria);
+        return categoria;
     }
 
     private boolean validarNombre(String nombre){
@@ -66,11 +79,11 @@ public class ImplCategoriaService implements CategoriaService {
         return true;
     }
 
-    @Override
-    @Transactional
-    public Categoria eliminarCategoria(int id) {
-        Categoria categoria = findById(id);
-        repository.delete(categoria);
-        return categoria;
+    private String capitalizarPalabra(String palabra){
+        String resto = palabra.substring(1).toLowerCase();
+        char primera = Character.toUpperCase(palabra.charAt(0));
+
+        return primera + resto;
     }
+
 }
