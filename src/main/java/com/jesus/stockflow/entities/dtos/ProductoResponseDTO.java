@@ -1,72 +1,53 @@
-package com.jesus.stockflow.entities;
+package com.jesus.stockflow.entities.dtos;
 
-import com.jesus.stockflow.entities.dtos.ProductoRequestDTO;
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "productos")
-public class Producto {
+public class ProductoResponseDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_producto_seq")
-    @SequenceGenerator(name = "id_producto_seq", sequenceName = "id_producto_seq", allocationSize = 1)
-    @Column(name = "id_producto")
-    private int idProducto;
-
-    @ManyToOne
-    @JoinColumn(name = "id_categoria")
-    private Categoria categoria;
-
-    @ManyToOne
-    @JoinColumn(name = "id_proveedor")
-    private Proveedor proveedor;
-
+    private int id;
+    private String categoria;
+    private String proveedor;
     private String sku;
     private String nombre;
     private BigDecimal precio;
     private int stock;
     private boolean activo;
 
-    public Producto(Categoria categoria, Proveedor proveedor, String sku, String nombre, BigDecimal precio, int stock) {
+    public ProductoResponseDTO(int id, String categoria, String proveedor, String sku, String nombre, BigDecimal precio, int stock, boolean activo) {
+        this.id = id;
         this.categoria = categoria;
         this.proveedor = proveedor;
         this.sku = sku;
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
-        this.activo = true;
+        this.activo = activo;
     }
 
-//    @PrePersist
-//    public void setActivo(){
-//        this.activo = true;
-//    }
-
-    public Producto() {
+    public ProductoResponseDTO() {
     }
 
-    public int getIdProducto() {
-        return idProducto;
+    public int getId() {
+        return id;
     }
 
-    public void setIdProducto(int id_producto) {
-        this.idProducto = id_producto;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Categoria getCategoria() {
+    public String getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(Categoria categoria) {
+    public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
 
-    public Proveedor getProveedor() {
+    public String getProveedor() {
         return proveedor;
     }
 
-    public void setProveedor(Proveedor proveedor) {
+    public void setProveedor(String proveedor) {
         this.proveedor = proveedor;
     }
 
