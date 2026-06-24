@@ -11,4 +11,6 @@ public interface ProductoRepository extends CrudRepository <Producto, Integer> {
     @Query("select p from Producto p where p.activo = true")
     List<Producto> findAll();
 
+    Producto findBySku(String sku);
+    List<Producto> findByNombreContainingIgnoreCase(String nombre);
 }

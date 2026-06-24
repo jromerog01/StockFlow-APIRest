@@ -5,6 +5,7 @@ import com.jesus.stockflow.entities.Producto;
 import com.jesus.stockflow.entities.Proveedor;
 import com.jesus.stockflow.entities.dtos.ProductoRequestDTO;
 import com.jesus.stockflow.entities.dtos.ProductoResponseDTO;
+import com.jesus.stockflow.entities.dtos.ProductoUpdateRequestDTO;
 import com.jesus.stockflow.exceptions.CamposInvalidosException;
 import com.jesus.stockflow.exceptions.IdInvalidoException;
 import com.jesus.stockflow.repositories.ProductoRepository;
@@ -31,8 +32,7 @@ public class ImplProductoService implements ProductoService {
 
     @Autowired
     private CategoriaService categoriaService;
-    @Autowired
-    private ThreadDumpEndpoint threadDumpEndpoint;
+
 
     @Override
     public ProductoResponseDTO save(ProductoRequestDTO producto) {
@@ -101,6 +101,45 @@ public class ImplProductoService implements ProductoService {
             return producto.get();
         }
         throw new IdInvalidoException("El id del producto ingresado no existe");
+    }
+
+    @Override
+    public Producto findBySku(String sku) {
+        if (validarSku(sku)){
+            return repository.findBySku(sku);
+        }
+        throw new CamposInvalidosException("El sku ingresado no tiene el formato correcto");
+    }
+
+    @Override
+    public List<Producto> findByNombreContainingIgnoreCase(String nombre) {
+        return repository.findByNombreContainingIgnoreCase(nombre);
+    }
+
+    @Override
+    public Producto update(int id, ProductoUpdateRequestDTO producto) {
+
+        if (validarSku(producto.getSku()) &&
+                MetodosAuxiliares.validarPalabra(producto.getNombre()) &&
+                producto.getPrecio().compareTo(BigDecimal.ZERO) > 0
+        ) {
+            Producto buscado = findById(id);
+            Categoria categoria = categoriaService.findById(producto.getIdCategoria());
+            Proveedor proveedor = proveedorService.findById(producto.getIdProveedor());
+
+            buscado.setCategoria(categoria);
+            buscado.setProveedor(proveedor);
+            buscado.setSku(producto.getSku());
+            buscado.setNombre(producto.getNombre());
+            buscado.setPrecio(producto.getPrecio());
+
+            repository.save(buscado);
+            return buscado;
+        }
+
+        throw new CamposInvalidosException("ALguno de los campos ingresados es invalido");
+
+
     }
 
     private boolean validarSku(String sku){

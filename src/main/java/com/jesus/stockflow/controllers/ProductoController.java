@@ -32,5 +32,17 @@ public class ProductoController {
         return service.findById(id);
     }
 
+    @GetMapping("/sku/{sku}")
+    public Producto findBySku(@PathVariable String sku){
+        return service.findBySku(sku);
+    }
+
+    @GetMapping("/buscar")
+    public List<Producto> findByNombre(@RequestParam String nombre){
+        return service.findByNombreContainingIgnoreCase(nombre);
+    }
+
+    
+
 
 }
