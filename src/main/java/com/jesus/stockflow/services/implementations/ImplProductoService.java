@@ -3,14 +3,13 @@ package com.jesus.stockflow.services.implementations;
 import com.jesus.stockflow.entities.Categoria;
 import com.jesus.stockflow.entities.Producto;
 import com.jesus.stockflow.entities.Proveedor;
-import com.jesus.stockflow.entities.dtos.ProductoRequestDTO;
-import com.jesus.stockflow.entities.dtos.ProductoResponseDTO;
-import com.jesus.stockflow.entities.dtos.ProductoUpdateRequestDTO;
-import com.jesus.stockflow.entities.dtos.StockRequestDTO;
+import com.jesus.stockflow.entities.dtos.*;
+import com.jesus.stockflow.entities.enums.TipoMovimiento;
 import com.jesus.stockflow.exceptions.CamposInvalidosException;
 import com.jesus.stockflow.exceptions.IdInvalidoException;
 import com.jesus.stockflow.repositories.ProductoRepository;
 import com.jesus.stockflow.services.interfaces.CategoriaService;
+import com.jesus.stockflow.services.interfaces.MovimientoInventarioService;
 import com.jesus.stockflow.services.interfaces.ProductoService;
 import com.jesus.stockflow.services.interfaces.ProveedorService;
 import jakarta.transaction.Transactional;
@@ -35,6 +34,9 @@ public class ImplProductoService implements ProductoService {
 
     @Autowired
     private CategoriaService categoriaService;
+
+    @Autowired
+    private MovimientoInventarioService movimientoInventarioService;
 
     @Value("${umbralBajoStock}")
     private int umbralBajoStock;
@@ -184,6 +186,11 @@ public class ImplProductoService implements ProductoService {
 
             producto.setStock(nuevoStock);
             repository.save(producto);
+            movimientoInventarioService.registrar(new MovimientoInventarioDTO(
+                    id,
+                    TipoMovimiento.ENTRADA,
+                    cantidadUnidades.getCantidad()
+            ));
 
             return producto;
         }
