@@ -6,13 +6,16 @@ import com.jesus.stockflow.entities.Proveedor;
 import com.jesus.stockflow.entities.dtos.ProductoRequestDTO;
 import com.jesus.stockflow.entities.dtos.ProductoResponseDTO;
 import com.jesus.stockflow.entities.dtos.ProductoUpdateRequestDTO;
+import com.jesus.stockflow.entities.dtos.StockRequestDTO;
 import com.jesus.stockflow.exceptions.CamposInvalidosException;
 import com.jesus.stockflow.exceptions.IdInvalidoException;
 import com.jesus.stockflow.repositories.ProductoRepository;
 import com.jesus.stockflow.services.interfaces.CategoriaService;
 import com.jesus.stockflow.services.interfaces.ProductoService;
 import com.jesus.stockflow.services.interfaces.ProveedorService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +36,11 @@ public class ImplProductoService implements ProductoService {
     @Autowired
     private CategoriaService categoriaService;
 
+    @Value("${umbralBajoStock}")
+    private int umbralBajoStock;
 
     @Override
+    @Transactional
     public ProductoResponseDTO save(ProductoRequestDTO producto) {
         if (validarSku(producto.getSku()) &&
                 producto.getPrecio().compareTo(BigDecimal.ZERO) > 0 &&
@@ -73,8 +79,9 @@ public class ImplProductoService implements ProductoService {
     }
 
     @Override
+    @Transactional
     public List<ProductoResponseDTO> findAll() {
-        List<Producto> normales = (List<Producto>) repository.findAll();
+        List<Producto> normales = repository.findAll();
         List<ProductoResponseDTO> mapeados = new ArrayList<>();
 
         for (Producto p : normales){
@@ -94,6 +101,7 @@ public class ImplProductoService implements ProductoService {
     }
 
     @Override
+    @Transactional
     public Producto findById(int id) {
         Optional<Producto> producto = repository.findById(id);
 
@@ -104,6 +112,7 @@ public class ImplProductoService implements ProductoService {
     }
 
     @Override
+    @Transactional
     public Producto findBySku(String sku) {
         if (validarSku(sku)){
             return repository.findBySku(sku);
@@ -117,6 +126,7 @@ public class ImplProductoService implements ProductoService {
     }
 
     @Override
+    @Transactional
     public Producto update(int id, ProductoUpdateRequestDTO producto) {
 
         if (validarSku(producto.getSku()) &&
@@ -138,8 +148,47 @@ public class ImplProductoService implements ProductoService {
         }
 
         throw new CamposInvalidosException("ALguno de los campos ingresados es invalido");
+    }
 
+    @Override
+    @Transactional
+    public Producto desactivarProducto(int id) {
+        Producto producto = findById(id);
+        producto.setActivo(false);
+        repository.save(producto);
+        return producto;
+    }
 
+    @Override
+    @Transactional
+    public Producto activarProducto(int id) {
+        Producto producto = findById(id);
+        producto.setActivo(true);
+        repository.save(producto);
+        return producto;
+    }
+
+    @Override
+    @Transactional
+    public List<Producto> findByStockIsLessThanEqual() {
+        return repository.findByStockIsLessThanEqual(umbralBajoStock);
+    }
+
+    @Override
+    @Transactional
+    public Producto entradaStock(int id, StockRequestDTO cantidadUnidades) {
+        Producto producto = findById(id);
+        if (producto.isActivo()){
+            int stockActual = producto.getStock();
+            int nuevoStock = stockActual + cantidadUnidades.getCantidad();
+
+            producto.setStock(nuevoStock);
+            repository.save(producto);
+
+            return producto;
+        }
+
+        throw new IdInvalidoException("El id del producto ingresado no es valido, deben ser productos existentes o que esten activos");
     }
 
     private boolean validarSku(String sku){

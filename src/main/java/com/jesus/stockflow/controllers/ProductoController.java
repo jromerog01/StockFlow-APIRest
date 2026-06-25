@@ -3,6 +3,8 @@ package com.jesus.stockflow.controllers;
 import com.jesus.stockflow.entities.Producto;
 import com.jesus.stockflow.entities.dtos.ProductoRequestDTO;
 import com.jesus.stockflow.entities.dtos.ProductoResponseDTO;
+import com.jesus.stockflow.entities.dtos.ProductoUpdateRequestDTO;
+import com.jesus.stockflow.entities.dtos.StockRequestDTO;
 import com.jesus.stockflow.services.interfaces.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +44,33 @@ public class ProductoController {
         return service.findByNombreContainingIgnoreCase(nombre);
     }
 
-    
+    @PutMapping("/{id}")
+    public Producto update (@PathVariable int id, @RequestBody ProductoUpdateRequestDTO producto){
+        return service.update(id, producto);
+    }
+
+    @PatchMapping("/{id}/desactivar")
+    public Producto desactivar(@PathVariable int id){
+        return service.desactivarProducto(id);
+    }
+
+    @PatchMapping("/{id}/activar")
+    public Producto activar(@PathVariable int id){
+        return service.activarProducto(id);
+    }
+
+    @GetMapping("/bajo-stock")
+    public List<Producto> findByStockIsLessThanEqual(){
+        return service.findByStockIsLessThanEqual();
+    }
+
+    @PatchMapping("/{id}/entrada-stock")
+    public Producto entradaStock(@PathVariable int id, @RequestBody StockRequestDTO cantidadUnidades){
+        return service.entradaStock(id, cantidadUnidades);
+    }
+
+
 
 
 }
+

@@ -13,4 +13,6 @@ public interface ProductoRepository extends CrudRepository <Producto, Integer> {
 
     Producto findBySku(String sku);
     List<Producto> findByNombreContainingIgnoreCase(String nombre);
+
+    List<Producto> findByStockIsLessThanEqual(int stockIsLessThan);
 }
