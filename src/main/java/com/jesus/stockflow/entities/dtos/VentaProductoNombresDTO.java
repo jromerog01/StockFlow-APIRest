@@ -2,10 +2,14 @@ package com.jesus.stockflow.entities.dtos;
 
 public class VentaProductoNombresDTO {
 
+    private int idProducto;
+    private String sku;
     private String nombreProducto;
     private int cantidad;
 
-    public VentaProductoNombresDTO(String nombreProducto, int cantidad) {
+    public VentaProductoNombresDTO(int idProducto, String sku, String nombreProducto, int cantidad) {
+        this.idProducto = idProducto;
+        this.sku = sku;
         this.nombreProducto = nombreProducto;
         this.cantidad = cantidad;
     }
@@ -27,5 +31,21 @@ public class VentaProductoNombresDTO {
 
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
+    public int getIdProducto() {
+        return idProducto;
+    }
+
+    public void setIdProducto(int idProducto) {
+        this.idProducto = idProducto;
     }
 }
