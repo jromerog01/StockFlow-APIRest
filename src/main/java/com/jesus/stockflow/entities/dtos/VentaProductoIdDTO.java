@@ -1,5 +1,6 @@
 package com.jesus.stockflow.entities.dtos;
 
+// Agregar un contructor para poder eliminar VentaProductoUpdateCantidadDTO
 public class VentaProductoIdDTO {
 
     private int idProducto;

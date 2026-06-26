@@ -11,6 +11,7 @@ import com.jesus.stockflow.services.interfaces.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -35,13 +36,21 @@ public class CarritoService {
                 if (p.getIdProducto() == nuevoProducto.getIdProducto()){
                     if (p.getCantidad() + nuevoProducto.getCantidad() <= productoConsultado.getStock()){
                         p.setCantidad(p.getCantidad() + nuevoProducto.getCantidad());
+                        p.setSubtotal(BigDecimal.valueOf(p.getPrecioUnitario().doubleValue() * p.getCantidad()));
                         return carrito.getProductos();
                     }
                     throw new CamposInvalidosException("No puedes agregar mas unidades del producto que quieres, no hay suficiente stock");
                 }
             }
             // No encontro el articulo, es decir, es un nuevo articulo
-            VentaProductoNombresDTO nuevo = new VentaProductoNombresDTO(productoConsultado.getIdProducto(), productoConsultado.getSku(), productoConsultado.getNombre(), nuevoProducto.getCantidad());
+            VentaProductoNombresDTO nuevo = new VentaProductoNombresDTO(
+                            productoConsultado.getIdProducto(),
+                            productoConsultado.getSku(),
+                            productoConsultado.getNombre(),
+                            nuevoProducto.getCantidad(),
+                            productoConsultado.getPrecio(),
+                            BigDecimal.valueOf(productoConsultado.getPrecio().doubleValue() * nuevoProducto.getCantidad()));
+
             carrito.getProductos().add(nuevo);
             return carrito.getProductos();
         }
@@ -56,9 +65,8 @@ public class CarritoService {
     public VentaProductoNombresDTO eliminarProducto(int idProducto){
         for (VentaProductoNombresDTO p : carrito.getProductos()){
             if (p.getIdProducto() == idProducto){
-                Producto producto = productoService.findById(idProducto);
                 carrito.getProductos().remove(p);
-                return new VentaProductoNombresDTO(p.getIdProducto(), producto.getSku(), producto.getNombre(), p.getCantidad());
+                return p;
             }
         }
         throw new IdInvalidoException("El id del producto que ingresaste no existe en tu carrito");
@@ -73,6 +81,8 @@ public class CarritoService {
                     }
 
                     p.setCantidad(p.getCantidad() - cantidad.getCantidad());
+                    p.setSubtotal(BigDecimal.valueOf(p.getPrecioUnitario().doubleValue() * cantidad.getCantidad()));
+
                     return p;
                 }
                 throw new CamposInvalidosException("Las unidades a eliminar no pueden ser 0 ni mas de las que tienes agregadas al carrito");
@@ -90,12 +100,19 @@ public class CarritoService {
                        return eliminarProducto(id);
                    }
                    p.setCantidad(cantidad.getCantidad());
+                   p.setSubtotal(BigDecimal.valueOf(p.getPrecioUnitario().doubleValue() * cantidad.getCantidad()));
+
                    return p;
                }
                throw new CamposInvalidosException("La cantidad a actualizar debe ser menor o igual al stock disponible");
             }
         }
         throw new IdInvalidoException("El id del producto que ingresaste no existe en tu carrito");
+    }
+
+    public List<VentaProductoNombresDTO> vaciarCarrito(){
+        carrito.getProductos().clear();
+        return carrito.getProductos();
     }
 
     // es para no agregar n veces el mismo producto si es que ya se agrego antes al carrito
@@ -105,7 +122,6 @@ public class CarritoService {
                 return p;
             }
         }
-
         return null;
     }
 

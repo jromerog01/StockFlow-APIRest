@@ -37,9 +37,14 @@ public class CarritoController {
         return service.eliminarUnidadesProducto(id, cantidad);
     }
 
-    @PutMapping("{/id}")
+    @PutMapping("/{id}")
     public VentaProductoNombresDTO actualizarUnidadesProducto (@PathVariable int id, @RequestBody VentaProductoUpdateCantidadDTO cantidad){
         return service.actualizarUnidadesProducto(id, cantidad);
+    }
+
+    @DeleteMapping
+    public List<VentaProductoNombresDTO> vaciarCarrito(){
+        return service.vaciarCarrito();
     }
 
 
