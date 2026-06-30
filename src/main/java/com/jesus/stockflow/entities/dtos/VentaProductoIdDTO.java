@@ -11,6 +11,10 @@ public class VentaProductoIdDTO {
         this.cantidad = cantidad;
     }
 
+    public VentaProductoIdDTO(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
     public VentaProductoIdDTO() {
     }
 

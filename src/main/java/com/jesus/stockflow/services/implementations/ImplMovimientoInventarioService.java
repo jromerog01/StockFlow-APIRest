@@ -8,6 +8,7 @@ import com.jesus.stockflow.exceptions.CamposInvalidosException;
 import com.jesus.stockflow.repositories.MovimientoInventarioRepository;
 import com.jesus.stockflow.services.interfaces.MovimientoInventarioService;
 import com.jesus.stockflow.services.interfaces.ProductoService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class ImplMovimientoInventarioService implements MovimientoInventarioServ
     private ProductoService productoService;
 
     @Override
+    @Transactional
     public MovimientoInventario registrar(MovimientoInventarioDTO movimiento) {
         if (movimiento.getCantidad() > 0){
             Producto producto = productoService.findById(movimiento.getIdProducto());

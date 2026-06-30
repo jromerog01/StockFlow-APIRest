@@ -5,6 +5,7 @@ import com.jesus.stockflow.exceptions.IdInvalidoException;
 import com.jesus.stockflow.exceptions.NombreInvalidoException;
 import com.jesus.stockflow.repositories.ProveedorRepository;
 import com.jesus.stockflow.services.interfaces.ProveedorService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class ImplProveedorService implements ProveedorService {
     private ProveedorRepository repository;
 
     @Override
+    @Transactional
     public Proveedor save(Proveedor proveedor){
         if(validarPalabra(proveedor.getNombre()) && validarTelefono(proveedor.getTelefono()) && validarCorreo(proveedor.getCorreo())){
             proveedor.setNombre(capitalizarPalabra(proveedor.getNombre()));
@@ -48,6 +50,7 @@ public class ImplProveedorService implements ProveedorService {
     }
 
     @Override
+    @Transactional
     public Proveedor update(int id, Proveedor proveedor) {
         Proveedor buscado = findById(id);
 
@@ -65,6 +68,7 @@ public class ImplProveedorService implements ProveedorService {
     }
 
     @Override
+    @Transactional
     public Proveedor delete(int id) {
         Proveedor proveedor = findById(id);
         repository.delete(proveedor);

@@ -1,13 +1,17 @@
 package com.jesus.stockflow.services.implementations;
 
 import com.jesus.stockflow.entities.Producto;
+import com.jesus.stockflow.entities.Venta;
+import com.jesus.stockflow.entities.dtos.ConfirmarVentaDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoIdDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoNombresDTO;
-import com.jesus.stockflow.entities.dtos.VentaProductoUpdateCantidadDTO;
+import com.jesus.stockflow.entities.enums.MetodoPago;
 import com.jesus.stockflow.exceptions.CamposInvalidosException;
 import com.jesus.stockflow.exceptions.IdInvalidoException;
 import com.jesus.stockflow.models.Carrito;
 import com.jesus.stockflow.services.interfaces.ProductoService;
+import com.jesus.stockflow.services.interfaces.VentaService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +26,9 @@ public class CarritoService {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private VentaService ventaService;
 
     // Pendiente: ver como optimizar para no iterar dos veces con el findById y en la segunda parte donde si existe
     public List<VentaProductoNombresDTO> agregarProducto(VentaProductoIdDTO nuevoProducto){
@@ -72,7 +79,7 @@ public class CarritoService {
         throw new IdInvalidoException("El id del producto que ingresaste no existe en tu carrito");
     }
 
-    public VentaProductoNombresDTO eliminarUnidadesProducto(int id, VentaProductoUpdateCantidadDTO cantidad){
+    public VentaProductoNombresDTO eliminarUnidadesProducto(int id, VentaProductoIdDTO cantidad){
         for (VentaProductoNombresDTO p : carrito.getProductos()){
             if (p.getIdProducto() == id){
                 if (cantidad.getCantidad() <= p.getCantidad() && cantidad.getCantidad() >= 0){
@@ -92,7 +99,7 @@ public class CarritoService {
 
     }
 
-    public VentaProductoNombresDTO actualizarUnidadesProducto (int id, VentaProductoUpdateCantidadDTO cantidad){
+    public VentaProductoNombresDTO actualizarUnidadesProducto (int id, VentaProductoIdDTO cantidad){
         for (VentaProductoNombresDTO p : carrito.getProductos()){
             if (p.getIdProducto() == id){
                if (cantidad.getCantidad() >= 0 && cantidad.getCantidad() <= productoService.findById(id).getStock()){
@@ -115,20 +122,20 @@ public class CarritoService {
         return carrito.getProductos();
     }
 
-    // es para no agregar n veces el mismo producto si es que ya se agrego antes al carrito
-    private VentaProductoNombresDTO buscarProducto(int id){
-        for (VentaProductoNombresDTO p : carrito.getProductos()){
-            if(p.getIdProducto() == id){
-                return p;
-            }
-        }
-        return null;
+    @Transactional
+    public ConfirmarVentaDTO confirmarVenta(MetodoPago metodoPago){
+        ConfirmarVentaDTO venta = ventaService.confirmarVenta(new ConfirmarVentaDTO(metodoPago, carrito.getProductos()));
+        vaciarCarrito();
+        return venta;
     }
+
 
 
     private boolean verificarStock(VentaProductoIdDTO nuevoProducto, Producto productoConsultado){
         return nuevoProducto.getCantidad() <= productoConsultado.getStock();
     }
+
+
 
 
 }

@@ -13,6 +13,7 @@ import com.jesus.stockflow.services.interfaces.MovimientoInventarioService;
 import com.jesus.stockflow.services.interfaces.ProductoService;
 import com.jesus.stockflow.services.interfaces.ProveedorService;
 import jakarta.transaction.Transactional;
+import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
@@ -78,6 +79,12 @@ public class ImplProductoService implements ProductoService {
         }
 
         throw new CamposInvalidosException("Alguno de los campos ingresados no tiene el formato correcto");
+    }
+
+    @Override
+    @Transactional
+    public Producto save(Producto producto) {
+        return repository.save(producto);
     }
 
     @Override
@@ -178,7 +185,7 @@ public class ImplProductoService implements ProductoService {
 
     @Override
     @Transactional
-    public Producto entradaStock(int id, StockRequestDTO cantidadUnidades) {
+    public Producto entradaStock(int id, VentaProductoIdDTO cantidadUnidades) {
         Producto producto = findById(id);
         if (producto.isActivo()){
             int stockActual = producto.getStock();

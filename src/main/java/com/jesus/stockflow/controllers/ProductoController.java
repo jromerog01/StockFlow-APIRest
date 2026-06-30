@@ -1,10 +1,7 @@
 package com.jesus.stockflow.controllers;
 
 import com.jesus.stockflow.entities.Producto;
-import com.jesus.stockflow.entities.dtos.ProductoRequestDTO;
-import com.jesus.stockflow.entities.dtos.ProductoResponseDTO;
-import com.jesus.stockflow.entities.dtos.ProductoUpdateRequestDTO;
-import com.jesus.stockflow.entities.dtos.StockRequestDTO;
+import com.jesus.stockflow.entities.dtos.*;
 import com.jesus.stockflow.services.interfaces.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -65,7 +62,7 @@ public class ProductoController {
     }
 
     @PatchMapping("/{id}/entrada-stock")
-    public Producto entradaStock(@PathVariable int id, @RequestBody StockRequestDTO cantidadUnidades){
+    public Producto entradaStock(@PathVariable int id, @RequestBody VentaProductoIdDTO cantidadUnidades){
         return service.entradaStock(id, cantidadUnidades);
     }
 

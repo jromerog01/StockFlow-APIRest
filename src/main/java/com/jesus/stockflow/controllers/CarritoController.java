@@ -1,9 +1,9 @@
 package com.jesus.stockflow.controllers;
 
-import com.jesus.stockflow.entities.Venta;
+import com.jesus.stockflow.entities.dtos.ConfirmarVentaDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoIdDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoNombresDTO;
-import com.jesus.stockflow.entities.dtos.VentaProductoUpdateCantidadDTO;
+import com.jesus.stockflow.entities.enums.MetodoPago;
 import com.jesus.stockflow.services.implementations.CarritoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,18 +33,23 @@ public class CarritoController {
     }
 
     @PatchMapping("/{id}")
-    public VentaProductoNombresDTO eliminarUnidadesProducto(@PathVariable int id, @RequestBody VentaProductoUpdateCantidadDTO cantidad){
+    public VentaProductoNombresDTO eliminarUnidadesProducto(@PathVariable int id, @RequestBody VentaProductoIdDTO cantidad){
         return service.eliminarUnidadesProducto(id, cantidad);
     }
 
     @PutMapping("/{id}")
-    public VentaProductoNombresDTO actualizarUnidadesProducto (@PathVariable int id, @RequestBody VentaProductoUpdateCantidadDTO cantidad){
+    public VentaProductoNombresDTO actualizarUnidadesProducto (@PathVariable int id, @RequestBody VentaProductoIdDTO cantidad){
         return service.actualizarUnidadesProducto(id, cantidad);
     }
 
     @DeleteMapping
     public List<VentaProductoNombresDTO> vaciarCarrito(){
         return service.vaciarCarrito();
+    }
+
+    @PostMapping("/confirmar/{metodoPago}")
+    public ConfirmarVentaDTO confirmarVenta(@PathVariable MetodoPago metodoPago){
+        return service.confirmarVenta(metodoPago);
     }
 
 
