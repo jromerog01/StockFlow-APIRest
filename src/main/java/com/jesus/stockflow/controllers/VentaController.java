@@ -36,7 +36,7 @@ public class VentaController {
     }
 
     @GetMapping("/sku")
-    public List<VentaCompletaDTO> findBySku(String sku){
+    public List<VentaCompletaDTO> findBySku(@RequestParam String sku){
         return service.findBySku(sku);
     }
 
