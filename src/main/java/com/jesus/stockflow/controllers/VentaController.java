@@ -1,14 +1,10 @@
 package com.jesus.stockflow.controllers;
 
-import com.jesus.stockflow.entities.dtos.ConfirmarVentaDTO;
-import com.jesus.stockflow.entities.dtos.VentaProductoNombresDTO;
+import com.jesus.stockflow.entities.dtos.VentaCompletaDTO;
 import com.jesus.stockflow.entities.enums.MetodoPago;
 import com.jesus.stockflow.services.interfaces.VentaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,18 +16,28 @@ public class VentaController {
     private VentaService service;
 
     @GetMapping
-    public List<ConfirmarVentaDTO> findAll(){
+    public List<VentaCompletaDTO> findAll(){
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public ConfirmarVentaDTO findById(@PathVariable int id){
+    public VentaCompletaDTO findById(@PathVariable int id){
         return service.findById(id);
     }
 
     @GetMapping("metodoPago/{metodoPago}")
-    public List<ConfirmarVentaDTO> findByMetodoDePago(@PathVariable MetodoPago metodoPago){
+    public List<VentaCompletaDTO> findByMetodoDePago(@PathVariable MetodoPago metodoPago){
         return service.findByMetodoDePago(metodoPago);
+    }
+
+    @GetMapping("/buscar")
+    public List<VentaCompletaDTO> findByNombreContaining(@RequestParam String nombre){
+        return service.findByNombreContaining(nombre);
+    }
+
+    @GetMapping("/sku")
+    public List<VentaCompletaDTO> findBySku(String sku){
+        return service.findBySku(sku);
     }
 
 

@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfirmarVentaDTO {
+public class VentaCompletaDTO {
 
     private int idVenta;
     private MetodoPago metodoPago;
@@ -14,12 +14,12 @@ public class ConfirmarVentaDTO {
     private BigDecimal subtotal;
     private BigDecimal total;
 
-    public ConfirmarVentaDTO(MetodoPago metodoPago, List<VentaProductoNombresDTO> productos) {
+    public VentaCompletaDTO(MetodoPago metodoPago, List<VentaProductoNombresDTO> productos) {
         this.metodoPago = metodoPago;
         this.productos = new ArrayList<>(productos);
     }
 
-    public ConfirmarVentaDTO(int idVenta, MetodoPago metodoPago, List<VentaProductoNombresDTO> productos, BigDecimal subtotal, BigDecimal total) {
+    public VentaCompletaDTO(int idVenta, MetodoPago metodoPago, List<VentaProductoNombresDTO> productos, BigDecimal subtotal, BigDecimal total) {
         this.metodoPago = metodoPago;
         this.productos = productos;
         this.subtotal = subtotal;
@@ -27,7 +27,7 @@ public class ConfirmarVentaDTO {
         this.idVenta = idVenta;
     }
 
-    public ConfirmarVentaDTO() {
+    public VentaCompletaDTO() {
     }
 
     public MetodoPago getMetodoPago() {

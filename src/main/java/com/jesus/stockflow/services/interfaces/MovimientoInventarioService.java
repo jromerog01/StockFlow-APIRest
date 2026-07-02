@@ -6,4 +6,5 @@ import com.jesus.stockflow.entities.dtos.MovimientoInventarioDTO;
 public interface MovimientoInventarioService {
 
     MovimientoInventario registrar(MovimientoInventarioDTO movimiento);
+
 }

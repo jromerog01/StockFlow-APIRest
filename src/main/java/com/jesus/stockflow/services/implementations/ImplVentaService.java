@@ -1,13 +1,11 @@
 package com.jesus.stockflow.services.implementations;
 
-import com.jesus.stockflow.entities.Producto;
 import com.jesus.stockflow.entities.Venta;
-import com.jesus.stockflow.entities.VentaProducto;
-import com.jesus.stockflow.entities.dtos.ConfirmarVentaDTO;
+import com.jesus.stockflow.entities.dtos.VentaCompletaDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoNombresDTO;
 import com.jesus.stockflow.entities.enums.MetodoPago;
 import com.jesus.stockflow.exceptions.CamposInvalidosException;
-import com.jesus.stockflow.repositories.ProductoRepository;
+import com.jesus.stockflow.exceptions.IdInvalidoException;
 import com.jesus.stockflow.repositories.VentaRepository;
 import com.jesus.stockflow.services.interfaces.ProductoService;
 import com.jesus.stockflow.services.interfaces.VentaProductoService;
@@ -34,7 +32,7 @@ public class ImplVentaService implements VentaService {
     private VentaProductoService ventaProductoService;
 
     @Transactional
-    public ConfirmarVentaDTO confirmarVenta(ConfirmarVentaDTO venta){
+    public VentaCompletaDTO confirmarVenta(VentaCompletaDTO venta){
         // Precio sin iva
         BigDecimal subtotal = BigDecimal.valueOf(0);
         for (VentaProductoNombresDTO p : venta.getProductos()){
@@ -59,12 +57,12 @@ public class ImplVentaService implements VentaService {
     }
 
     @Override
-    public List<ConfirmarVentaDTO> findAll(){
-        List<ConfirmarVentaDTO> todos = new ArrayList<>();
+    public List<VentaCompletaDTO> findAll(){
+        List<VentaCompletaDTO> todos = new ArrayList<>();
         List<Venta> ventas = (List<Venta>) repository.findAll();
 
         for (Venta v : ventas){
-            todos.add(new ConfirmarVentaDTO(
+            todos.add(new VentaCompletaDTO(
                     v.getIdVenta(),
                     v.getMetodoPago(),
                     ventaProductoService.getProductosVenta(v.getIdVenta()),
@@ -77,12 +75,12 @@ public class ImplVentaService implements VentaService {
     }
 
     @Override
-    public ConfirmarVentaDTO findById(int id) {
+    public VentaCompletaDTO findById(int id) {
         Optional<Venta> venta = repository.findById(id);
 
         if (venta.isPresent()){
             Venta venta1 = venta.get();
-            return new ConfirmarVentaDTO(
+            return new VentaCompletaDTO(
                     venta1.getIdVenta(),
                     venta1.getMetodoPago(),
                     ventaProductoService.getProductosVenta(venta.get().getIdVenta()),
@@ -91,16 +89,16 @@ public class ImplVentaService implements VentaService {
             );
         }
 
-        throw new CamposInvalidosException("El id de la venta es invalido, no existe alguna venta con ese id");
+        throw new IdInvalidoException("El id de la venta es invalido, no existe alguna venta con ese id");
     }
 
     @Override
-    public List<ConfirmarVentaDTO> findByMetodoDePago(MetodoPago metodoPago) {
+    public List<VentaCompletaDTO> findByMetodoDePago(MetodoPago metodoPago) {
         List<Venta> ventas = repository.findByMetodoPago(metodoPago);
-        List<ConfirmarVentaDTO> mapeadas = new ArrayList<>();
+        List<VentaCompletaDTO> mapeadas = new ArrayList<>();
 
         for (Venta v : ventas){
-            mapeadas.add(new ConfirmarVentaDTO(
+            mapeadas.add(new VentaCompletaDTO(
                     v.getIdVenta(),
                     v.getMetodoPago(),
                     ventaProductoService.getProductosVenta(v.getIdVenta()),
@@ -110,5 +108,37 @@ public class ImplVentaService implements VentaService {
         }
 
         return mapeadas;
+    }
+
+    @Override
+    public List<VentaCompletaDTO> findByNombreContaining(String nombre) {
+        List<VentaCompletaDTO> todos = findAll();
+        List<VentaCompletaDTO> encontrados = new ArrayList<>();
+
+        for(VentaCompletaDTO v : todos){
+            for (VentaProductoNombresDTO p : v.getProductos()){
+                if(p.getNombreProducto().toLowerCase().contains(nombre.toLowerCase())){
+                    encontrados.add(v);
+                }
+            }
+        }
+
+        return encontrados;
+    }
+
+    @Override
+    public List<VentaCompletaDTO> findBySku(String sku) {
+        List<VentaCompletaDTO> todos = findAll();
+        List<VentaCompletaDTO> encontrados = new ArrayList<>();
+
+        for(VentaCompletaDTO v : todos){
+            for (VentaProductoNombresDTO p : v.getProductos()){
+                if(p.getSku().equals(sku)){
+                    encontrados.add(v);
+                }
+            }
+        }
+
+        return encontrados;
     }
 }

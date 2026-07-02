@@ -1,8 +1,7 @@
 package com.jesus.stockflow.services.implementations;
 
 import com.jesus.stockflow.entities.Producto;
-import com.jesus.stockflow.entities.Venta;
-import com.jesus.stockflow.entities.dtos.ConfirmarVentaDTO;
+import com.jesus.stockflow.entities.dtos.VentaCompletaDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoIdDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoNombresDTO;
 import com.jesus.stockflow.entities.enums.MetodoPago;
@@ -88,7 +87,7 @@ public class CarritoService {
                     }
 
                     p.setCantidad(p.getCantidad() - cantidad.getCantidad());
-                    p.setSubtotal(BigDecimal.valueOf(p.getPrecioUnitario().doubleValue() * cantidad.getCantidad()));
+                    p.setSubtotal(BigDecimal.valueOf(p.getPrecioUnitario().doubleValue() * p.getCantidad()));
 
                     return p;
                 }
@@ -123,8 +122,8 @@ public class CarritoService {
     }
 
     @Transactional
-    public ConfirmarVentaDTO confirmarVenta(MetodoPago metodoPago){
-        ConfirmarVentaDTO venta = ventaService.confirmarVenta(new ConfirmarVentaDTO(metodoPago, carrito.getProductos()));
+    public VentaCompletaDTO confirmarVenta(MetodoPago metodoPago){
+        VentaCompletaDTO venta = ventaService.confirmarVenta(new VentaCompletaDTO(metodoPago, carrito.getProductos()));
         vaciarCarrito();
         return venta;
     }
