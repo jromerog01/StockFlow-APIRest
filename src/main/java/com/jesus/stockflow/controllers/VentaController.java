@@ -25,17 +25,17 @@ public class VentaController {
         return service.findById(id);
     }
 
-    @GetMapping("metodoPago/{metodoPago}")
-    public List<VentaCompletaDTO> findByMetodoDePago(@PathVariable MetodoPago metodoPago){
+    @GetMapping(params = "metodoPago")
+    public List<VentaCompletaDTO> findByMetodoDePago(@RequestParam MetodoPago metodoPago){
         return service.findByMetodoDePago(metodoPago);
     }
 
-    @GetMapping("/buscar")
+    @GetMapping(params = "nombre")
     public List<VentaCompletaDTO> findByNombreContaining(@RequestParam String nombre){
         return service.findByNombreContaining(nombre);
     }
 
-    @GetMapping("/sku")
+    @GetMapping(params = "sku")
     public List<VentaCompletaDTO> findBySku(@RequestParam String sku){
         return service.findBySku(sku);
     }

@@ -27,44 +27,35 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public Producto findById(@PathVariable int id){
-        return service.findById(id);
+    public ProductoResponseDTO findById(@PathVariable int id){
+        return service.findByIdMapeado(id);
     }
 
-    @GetMapping("/sku/{sku}")
-    public Producto findBySku(@PathVariable String sku){
+    @GetMapping(params = "sku")
+    public ProductoResponseDTO findBySku(@RequestParam String sku){
         return service.findBySku(sku);
     }
 
-    @GetMapping("/buscar")
-    public List<Producto> findByNombre(@RequestParam String nombre){
+    @GetMapping(params = "nombre")
+    public List<ProductoResponseDTO> findByNombre(@RequestParam String nombre){
         return service.findByNombreContainingIgnoreCase(nombre);
     }
 
     @PutMapping("/{id}")
-    public Producto update (@PathVariable int id, @RequestBody ProductoUpdateRequestDTO producto){
+    public ProductoResponseDTO update (@PathVariable int id, @RequestBody ProductoUpdateRequestDTO producto){
         return service.update(id, producto);
     }
 
-    @PatchMapping("/{id}/desactivar")
-    public Producto desactivar(@PathVariable int id){
-        return service.desactivarProducto(id);
+    @PatchMapping(value = "/{id}")
+    public ProductoResponseDTO activarDesactivarProducto(@PathVariable int id, @RequestBody ActivarDesactivarDTO estado){
+        return service.activarDesactivarProducto(id, estado.isActivo());
     }
 
-    @PatchMapping("/{id}/activar")
-    public Producto activar(@PathVariable int id){
-        return service.activarProducto(id);
+    @GetMapping(params = "bajoStock")
+    public List<ProductoResponseDTO> findByStockIsLessThanEqual(@RequestParam boolean bajoStock){
+        return service.findByStockIsLessThanEqual(bajoStock);
     }
 
-    @GetMapping("/bajo-stock")
-    public List<Producto> findByStockIsLessThanEqual(){
-        return service.findByStockIsLessThanEqual();
-    }
-
-    @PatchMapping("/{id}/entrada-stock")
-    public Producto entradaStock(@PathVariable int id, @RequestBody VentaProductoIdDTO cantidadUnidades){
-        return service.entradaStock(id, cantidadUnidades);
-    }
 
 
 

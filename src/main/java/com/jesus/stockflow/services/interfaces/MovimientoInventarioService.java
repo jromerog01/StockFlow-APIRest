@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface MovimientoInventarioService {
 
-    MovimientoInventario registrar(MovimientoInventarioDTO movimiento);
+    MovimientoInventarioResponseDTO registrar(MovimientoInventarioDTO movimiento);
+    void registrarMovimientoSalidaVerificado(MovimientoInventarioDTO movimiento);
     List<MovimientoInventarioResponseDTO> findAll();
     MovimientoInventarioResponseDTO findById(int id);
     List<MovimientoInventarioResponseDTO> findByNombreContaining(String nombre);

@@ -1,5 +1,6 @@
 package com.jesus.stockflow.controllers;
 
+import com.jesus.stockflow.entities.dtos.MetodoPagoDTO;
 import com.jesus.stockflow.entities.dtos.VentaCompletaDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoIdDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoNombresDTO;
@@ -47,9 +48,9 @@ public class CarritoController {
         return service.vaciarCarrito();
     }
 
-    @PostMapping("/confirmar/{metodoPago}")
-    public VentaCompletaDTO confirmarVenta(@PathVariable MetodoPago metodoPago){
-        return service.confirmarVenta(metodoPago);
+    @PostMapping("/confirmar")
+    public VentaCompletaDTO confirmarVenta(@RequestBody MetodoPagoDTO metodoPago){
+        return service.confirmarVenta(metodoPago.getMetodoPago());
     }
 
 

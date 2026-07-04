@@ -32,7 +32,7 @@ public class ImplMovimientoInventarioService implements MovimientoInventarioServ
 
     @Override
     @Transactional
-    public MovimientoInventario registrar(MovimientoInventarioDTO movimiento) {
+    public MovimientoInventarioResponseDTO registrar(MovimientoInventarioDTO movimiento) {
         if (movimiento.getCantidad() > 0){
             Producto producto = productoService.findById(movimiento.getIdProducto());
             MovimientoInventario movimientoInventario = new MovimientoInventario(
@@ -41,14 +41,51 @@ public class ImplMovimientoInventarioService implements MovimientoInventarioServ
                     movimiento.getCantidad()
             );
 
-            repository.save(movimientoInventario);
-            return movimientoInventario;
+            if (movimiento.getTipoMovimiento().equals(TipoMovimiento.ENTRADA)){
+                producto.setStock(producto.getStock() + movimiento.getCantidad());
+                productoService.save(producto);
+            } else {
+                if (producto.getStock() <= movimiento.getCantidad()){
+                    producto.setStock(producto.getStock() - movimiento.getCantidad());
+                    productoService.save(producto);
+                }
+                throw new CamposInvalidosException("La cantidad del movimiento supera el stock disponible");
+            }
+            MovimientoInventario mv = repository.save(movimientoInventario);
+
+            return new MovimientoInventarioResponseDTO(
+                    mv.getIdMovimiento(),
+                    producto.getNombre(),
+                    producto.getSku(),
+                    movimiento.getCantidad(),
+                    movimiento.getTipoMovimiento(),
+                    mv.getFecha()
+                    );
         }
 
         throw new CamposInvalidosException("La cantidad del movimiento debe ser mayor a 0");
     }
 
     @Override
+    @Transactional
+    public void registrarMovimientoSalidaVerificado(MovimientoInventarioDTO movimiento){
+        if (movimiento.getCantidad() > 0){
+            Producto producto = productoService.findById(movimiento.getIdProducto());
+            MovimientoInventario movimientoInventario = new MovimientoInventario(
+                    producto,
+                    movimiento.getTipoMovimiento(),
+                    movimiento.getCantidad()
+            );
+            repository.save(movimientoInventario);
+
+        }
+
+        throw new CamposInvalidosException("La cantidad del movimiento debe ser mayor a 0");
+    }
+
+
+    @Override
+    @Transactional
     public List<MovimientoInventarioResponseDTO> findAll() {
         return mapear((List<MovimientoInventario>) repository.findAll());
     }
@@ -72,6 +109,7 @@ public class ImplMovimientoInventarioService implements MovimientoInventarioServ
     }
 
     @Override
+    @Transactional
     public MovimientoInventarioResponseDTO findById(int id) {
         Optional<MovimientoInventario> movimiento = repository.findById(id);
 

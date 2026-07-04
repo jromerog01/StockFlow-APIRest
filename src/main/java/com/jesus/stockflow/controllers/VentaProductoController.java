@@ -25,34 +25,34 @@ public class VentaProductoController {
         return service.findById(id);
     }
 
-    @GetMapping("/venta/{idVenta}")
-    public List<VentaProductoDescripcionDTO> findByIdVenta(@PathVariable int idVenta){
+    @GetMapping(params = "idVenta")
+    public List<VentaProductoDescripcionDTO> findByIdVenta(@RequestParam int idVenta){
         return service.findByIdVenta(idVenta);
     }
 
-    @GetMapping("/producto/{idProducto}")
-    public List<VentaProductoDescripcionDTO> findByIdProducto(@PathVariable int idProducto){
+    @GetMapping(params = "idProducto")
+    public List<VentaProductoDescripcionDTO> findByIdProducto(@RequestParam int idProducto){
         return service.findByIdProducto(idProducto);
     }
 
-    @GetMapping("/producto/sku")
+    @GetMapping(params = "sku")
     public List<VentaProductoDescripcionDTO> findBySku(@RequestParam String sku){
         return service.findBySku(sku);
     }
 
-    @GetMapping("/producto")
+    @GetMapping(params = "nombre")
     public List<VentaProductoDescripcionDTO> findByNombreContaining(@RequestParam String nombre){
         return service.findByNombreContaining(nombre);
     }
 
-    @GetMapping("/cantidad/mayor-que")
-    public List<VentaProductoDescripcionDTO> findByCantidadGreaterThan(@RequestParam int cantidad){
-        return service.findByCantidadGreaterThan(cantidad);
+    @GetMapping(params = "cantidadMin")
+    public List<VentaProductoDescripcionDTO> findByCantidadGreaterThan(@RequestParam int cantidadMin){
+        return service.findByCantidadGreaterThan(cantidadMin);
     }
 
-    @GetMapping("/cantidad/menor-que")
-    public List<VentaProductoDescripcionDTO> findByCantidadLessThan(@RequestParam int cantidad){
-        return service.findByCantidadLessThan(cantidad);
+    @GetMapping(params = "cantidadMax")
+    public List<VentaProductoDescripcionDTO> findByCantidadLessThan(@RequestParam int cantidadMax){
+        return service.findByCantidadLessThan(cantidadMax);
     }
 
 

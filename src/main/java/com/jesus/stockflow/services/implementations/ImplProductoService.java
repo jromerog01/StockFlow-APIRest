@@ -111,6 +111,16 @@ public class ImplProductoService implements ProductoService {
 
     @Override
     @Transactional
+    public ProductoResponseDTO findByIdMapeado(int id) {
+        Optional<Producto> producto = repository.findById(id);
+
+        if (producto.isPresent()){
+            return mapear(producto.get());
+        }
+        throw new IdInvalidoException("El id del producto ingresado no existe");
+    }
+
+    @Override
     public Producto findById(int id) {
         Optional<Producto> producto = repository.findById(id);
 
@@ -120,23 +130,24 @@ public class ImplProductoService implements ProductoService {
         throw new IdInvalidoException("El id del producto ingresado no existe");
     }
 
+
     @Override
     @Transactional
-    public Producto findBySku(String sku) {
+    public ProductoResponseDTO findBySku(String sku) {
         if (validarSku(sku)){
-            return repository.findBySku(sku);
+            return mapear(repository.findBySku(sku));
         }
         throw new CamposInvalidosException("El sku ingresado no tiene el formato correcto");
     }
 
     @Override
-    public List<Producto> findByNombreContainingIgnoreCase(String nombre) {
-        return repository.findByNombreContainingIgnoreCase(nombre);
+    public List<ProductoResponseDTO> findByNombreContainingIgnoreCase(String nombre) {
+        return mapearLista(repository.findByNombreContainingIgnoreCase(nombre));
     }
 
     @Override
     @Transactional
-    public Producto update(int id, ProductoUpdateRequestDTO producto) {
+    public ProductoResponseDTO update(int id, ProductoUpdateRequestDTO producto) {
 
         if (validarSku(producto.getSku()) &&
                 MetodosAuxiliares.validarPalabra(producto.getNombre()) &&
@@ -153,7 +164,7 @@ public class ImplProductoService implements ProductoService {
             buscado.setPrecio(producto.getPrecio());
 
             repository.save(buscado);
-            return buscado;
+            return mapear(buscado);
         }
 
         throw new CamposInvalidosException("ALguno de los campos ingresados es invalido");
@@ -161,54 +172,52 @@ public class ImplProductoService implements ProductoService {
 
     @Override
     @Transactional
-    public Producto desactivarProducto(int id) {
-        Producto producto = findById(id);
-        producto.setActivo(false);
-        repository.save(producto);
-        return producto;
+    public ProductoResponseDTO activarDesactivarProducto(int id, boolean estado) {
+        Producto buscado = findById(id);
+        buscado.setActivo(estado);
+        repository.save(buscado);
+        return mapear(buscado);
     }
 
     @Override
     @Transactional
-    public Producto activarProducto(int id) {
-        Producto producto = findById(id);
-        producto.setActivo(true);
-        repository.save(producto);
-        return producto;
-    }
-
-    @Override
-    @Transactional
-    public List<Producto> findByStockIsLessThanEqual() {
-        return repository.findByStockIsLessThanEqual(umbralBajoStock);
-    }
-
-    @Override
-    @Transactional
-    public Producto entradaStock(int id, VentaProductoIdDTO cantidadUnidades) {
-        Producto producto = findById(id);
-        if (producto.isActivo()){
-            int stockActual = producto.getStock();
-            int nuevoStock = stockActual + cantidadUnidades.getCantidad();
-
-            producto.setStock(nuevoStock);
-            repository.save(producto);
-            movimientoInventarioService.registrar(new MovimientoInventarioDTO(
-                    id,
-                    TipoMovimiento.ENTRADA,
-                    cantidadUnidades.getCantidad()
-            ));
-
-            return producto;
+    public List<ProductoResponseDTO> findByStockIsLessThanEqual(boolean bajoStock) {
+        if (bajoStock){
+            return mapearLista(repository.findByStockIsLessThanEqual(umbralBajoStock));
         }
-
-        throw new IdInvalidoException("El id del producto ingresado no es valido, deben ser productos existentes o que esten activos");
+        return mapearLista(repository.findByStockGreaterThan(umbralBajoStock));
     }
+
 
     private boolean validarSku(String sku){
         if (sku.matches("^[A-Z0-9-]{3,50}$")){
             return true;
         }
         throw new CamposInvalidosException("El sku no tiene el formato requerido");
+    }
+
+    private ProductoResponseDTO mapear(Producto producto){
+        return new ProductoResponseDTO(
+                producto.getIdProducto(),
+                producto.getCategoria().getNombre(),
+                producto.getProveedor().getNombre(),
+                producto.getSku(),
+                producto.getNombre(),
+                producto.getPrecio(),
+                producto.getStock(),
+                producto.isActivo());
+    }
+
+    private List<ProductoResponseDTO> mapearLista(List<Producto> productos){
+
+        List<ProductoResponseDTO> mapeados = new ArrayList<>();
+
+        for (Producto producto : productos){
+            mapeados.add(mapear(producto));
+        }
+
+        return mapeados;
+
+
     }
 }

@@ -1,5 +1,6 @@
 package com.jesus.stockflow.controllers;
 
+import com.jesus.stockflow.entities.dtos.MovimientoInventarioDTO;
 import com.jesus.stockflow.entities.dtos.MovimientoInventarioResponseDTO;
 import com.jesus.stockflow.entities.enums.TipoMovimiento;
 import com.jesus.stockflow.services.interfaces.MovimientoInventarioService;
@@ -25,28 +26,33 @@ public class MovimientoInventarioController {
         return service.findById(id);
     }
 
-    @GetMapping("/buscar")
+    @PostMapping
+    public MovimientoInventarioResponseDTO registrar(@RequestBody MovimientoInventarioDTO movimiento){
+        return service.registrar(movimiento);
+    }
+
+    @GetMapping(params = "nombre")
     public List<MovimientoInventarioResponseDTO> findByNombreContaining(@RequestParam String nombre){
         return service.findByNombreContaining(nombre);
     }
 
-    @GetMapping("/sku")
+    @GetMapping(params = "sku")
     public List<MovimientoInventarioResponseDTO> findBySku(@RequestParam String sku){
         return service.findBySku(sku);
     }
 
-    @GetMapping("/cantidad/mayor-que")
+    @GetMapping(params = "cantidadMin")
     public List<MovimientoInventarioResponseDTO> findByCantidadGreaterThan(@RequestParam int cantidadMin){
         return service.findByCantidadGreaterThan(cantidadMin);
     }
 
-    @GetMapping("/cantidad/menor-que")
+    @GetMapping(params = "cantidadMax")
     public List<MovimientoInventarioResponseDTO> findByCantidadLessThan(@RequestParam int cantidadMax){
         return service.findByCantidadLessThan(cantidadMax);
     }
 
-    @GetMapping("/tipo/{tipoMovimiento}")
-    public List<MovimientoInventarioResponseDTO> findByTipoMovimiento(@PathVariable TipoMovimiento tipoMovimiento){
+    @GetMapping(params = "tipoMovimiento")
+    public List<MovimientoInventarioResponseDTO> findByTipoMovimiento(@RequestParam TipoMovimiento tipoMovimiento){
         return service.findByTipoMovimiento(tipoMovimiento);
     }
 

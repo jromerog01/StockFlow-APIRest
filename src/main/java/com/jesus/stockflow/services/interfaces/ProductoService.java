@@ -11,13 +11,12 @@ public interface ProductoService {
     Producto save(Producto producto);
     List<ProductoResponseDTO> findAll();
     Producto findById(int id);
-    Producto findBySku(String sku);
-    List<Producto> findByNombreContainingIgnoreCase(String nombre);
-    Producto update(int id, ProductoUpdateRequestDTO producto);
-    Producto desactivarProducto(int id);
-    Producto activarProducto(int id);
-    List<Producto> findByStockIsLessThanEqual();
-    Producto entradaStock(int id, VentaProductoIdDTO cantidadUnidades);
+    ProductoResponseDTO findByIdMapeado(int id);
+    ProductoResponseDTO findBySku(String sku);
+    List<ProductoResponseDTO> findByNombreContainingIgnoreCase(String nombre);
+    ProductoResponseDTO update(int id, ProductoUpdateRequestDTO producto);
+    ProductoResponseDTO activarDesactivarProducto(int id, boolean estado);
+    List<ProductoResponseDTO> findByStockIsLessThanEqual(boolean bajoStock);
 
 
 }

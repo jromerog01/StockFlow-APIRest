@@ -47,6 +47,7 @@ public class ImplVentaService implements VentaService {
 
         Venta ventaGuardada = repository.save(new Venta(venta.getMetodoPago(), subtotal, total));
         registrarProductosVenta(ventaGuardada, venta.getProductos());
+        venta.setIdVenta(ventaGuardada.getIdVenta());
 
         return venta;
     }
