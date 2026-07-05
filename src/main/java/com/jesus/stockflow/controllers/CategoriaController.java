@@ -1,6 +1,6 @@
 package com.jesus.stockflow.controllers;
 
-import com.jesus.stockflow.entities.Categoria;
+import com.jesus.stockflow.entities.dtos.CategoriaDTO;
 import com.jesus.stockflow.services.interfaces.CategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,27 +15,27 @@ public class CategoriaController {
     private CategoriaService service;
 
     @GetMapping
-    public List<Categoria> findAll(){
+    public List<CategoriaDTO> findAll(){
         return service.findAll();
     }
 
     @PostMapping
-    public Categoria save(@RequestBody Categoria categoria){
+    public CategoriaDTO save(@RequestBody CategoriaDTO categoria){
         return service.save(categoria);
     }
 
     @GetMapping("/{id}")
-    public Categoria findById(@PathVariable int id){
-        return service.findById(id);
+    public CategoriaDTO findById(@PathVariable int id){
+        return service.findByIdMapeada(id);
     }
 
     @PutMapping("/{id}")
-    public int update(@PathVariable int id, @RequestBody Categoria nombre){
+    public CategoriaDTO update(@PathVariable int id, @RequestBody CategoriaDTO nombre){
         return service.update(id, nombre);
     }
 
     @DeleteMapping("/{id}")
-    public Categoria delete(@PathVariable int id){
+    public CategoriaDTO delete(@PathVariable int id){
         return service.delete(id);
     }
 

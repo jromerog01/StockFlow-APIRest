@@ -19,8 +19,7 @@ public interface VentaProductoRepository extends CrudRepository <VentaProducto, 
     @Query("select v from VentaProducto v where v.producto.sku = ?1")
     List<VentaProducto> findBySku(String sku);
 
-    @Query("select v from VentaProducto v where v.producto.nombre = ?1")
-    List<VentaProducto> findByNombreContaining(String nombre);
+    List<VentaProducto> findByProductoNombreContainingIgnoreCase(String nombre);
 
     @Query("select v from VentaProducto v where v.unidades >= ?1")
     List<VentaProducto> findByCantidadGreaterThan(int unidades);

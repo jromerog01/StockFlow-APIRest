@@ -8,6 +8,7 @@ import com.jesus.stockflow.entities.enums.MetodoPago;
 import com.jesus.stockflow.exceptions.CamposInvalidosException;
 import com.jesus.stockflow.exceptions.IdInvalidoException;
 import com.jesus.stockflow.models.Carrito;
+import com.jesus.stockflow.services.interfaces.CarritoService;
 import com.jesus.stockflow.services.interfaces.ProductoService;
 import com.jesus.stockflow.services.interfaces.VentaService;
 import jakarta.transaction.Transactional;
@@ -18,7 +19,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-public class CarritoService {
+public class ImplCarritoService implements CarritoService {
 
     @Autowired
     private Carrito carrito;
@@ -29,7 +30,7 @@ public class CarritoService {
     @Autowired
     private VentaService ventaService;
 
-    // Pendiente: ver como optimizar para no iterar dos veces con el findById y en la segunda parte donde si existe
+    @Override
     public List<VentaProductoNombresDTO> agregarProducto(VentaProductoIdDTO nuevoProducto){
         if (nuevoProducto.getCantidad() < 1) throw new CamposInvalidosException("No puedes agregar menos de 1 unidad al carrito");
 
@@ -63,11 +64,12 @@ public class CarritoService {
         throw new CamposInvalidosException("No hay suficiente stock del producto solicitado");
     }
 
-
+    @Override
     public List<VentaProductoNombresDTO> verProductos(){
         return carrito.getProductos();
     }
 
+    @Override
     public VentaProductoNombresDTO eliminarProducto(int idProducto){
         for (VentaProductoNombresDTO p : carrito.getProductos()){
             if (p.getIdProducto() == idProducto){
@@ -78,6 +80,7 @@ public class CarritoService {
         throw new IdInvalidoException("El id del producto que ingresaste no existe en tu carrito");
     }
 
+    @Override
     public VentaProductoNombresDTO eliminarUnidadesProducto(int id, VentaProductoIdDTO cantidad){
         for (VentaProductoNombresDTO p : carrito.getProductos()){
             if (p.getIdProducto() == id){
@@ -98,6 +101,7 @@ public class CarritoService {
 
     }
 
+    @Override
     public VentaProductoNombresDTO actualizarUnidadesProducto (int id, VentaProductoIdDTO cantidad){
         for (VentaProductoNombresDTO p : carrito.getProductos()){
             if (p.getIdProducto() == id){
@@ -116,19 +120,19 @@ public class CarritoService {
         throw new IdInvalidoException("El id del producto que ingresaste no existe en tu carrito");
     }
 
+    @Override
     public List<VentaProductoNombresDTO> vaciarCarrito(){
         carrito.getProductos().clear();
         return carrito.getProductos();
     }
 
+    @Override
     @Transactional
     public VentaCompletaDTO confirmarVenta(MetodoPago metodoPago){
         VentaCompletaDTO venta = ventaService.confirmarVenta(new VentaCompletaDTO(metodoPago, carrito.getProductos()));
         vaciarCarrito();
         return venta;
     }
-
-
 
     private boolean verificarStock(VentaProductoIdDTO nuevoProducto, Producto productoConsultado){
         return nuevoProducto.getCantidad() <= productoConsultado.getStock();

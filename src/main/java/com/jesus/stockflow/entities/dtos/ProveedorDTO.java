@@ -1,36 +1,34 @@
-package com.jesus.stockflow.entities;
+package com.jesus.stockflow.entities.dtos;
 
-import jakarta.persistence.*;
+public class ProveedorDTO {
 
-@Entity
-@Table(name = "proveedores")
-public class Proveedor {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_proveedor_seq")
-    @SequenceGenerator(name = "id_proveedor_seq", sequenceName = "id_proveedor_seq", allocationSize = 1)
-    @Column(name = "id_proveedor")
     private int idProveedor;
-
     private String nombre;
     private String telefono;
     private String correo;
 
-    public Proveedor() {
-    }
-
-    public Proveedor(String nombre, String telefono, String correo) {
+    public ProveedorDTO(int idProveedor, String nombre, String telefono, String correo) {
+        this.idProveedor = idProveedor;
         this.nombre = nombre;
         this.telefono = telefono;
         this.correo = correo;
+    }
+
+    public ProveedorDTO(String nombre, String telefono, String correo) {
+        this.nombre = nombre;
+        this.telefono = telefono;
+        this.correo = correo;
+    }
+
+    public ProveedorDTO() {
     }
 
     public int getIdProveedor() {
         return idProveedor;
     }
 
-    public void setIdProveedor(int id_proveedor) {
-        this.idProveedor = id_proveedor;
+    public void setIdProveedor(int idProveedor) {
+        this.idProveedor = idProveedor;
     }
 
     public String getNombre() {

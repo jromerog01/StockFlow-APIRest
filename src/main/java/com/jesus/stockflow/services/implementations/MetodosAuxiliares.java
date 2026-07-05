@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class MetodosAuxiliares {
 
     public static boolean validarPalabra(String nombre){
-        if (nombre.isEmpty() || nombre.equals(" ")){
+        if (nombre == null || nombre.isEmpty() || nombre.equals(" ")){
             throw new NombreInvalidoException("El nombre ingresado no puede estar vacio");
         }
         return true;

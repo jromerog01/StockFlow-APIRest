@@ -46,19 +46,8 @@ public class ImplVentaProductoService implements VentaProductoService {
                     p.getPrecioUnitario(),
                     p.getSubtotal()
             ));
-            reducirStock(productoById, p.getCantidad());
         }
         registrarMovimientoInventario(productos);
-    }
-
-    @Override
-    @Transactional
-    public void reducirStock(Producto p, int cantidad){
-        if (cantidad <= 0) throw new CamposInvalidosException("La cantidad no puede ser cero");
-        if (cantidad > p.getStock()) throw new CamposInvalidosException("La cantidad no puede ser mayor al stock disponible");
-
-        p.setStock(p.getStock() - cantidad);
-        productoService.save(p);
     }
 
     @Transactional
@@ -143,7 +132,7 @@ public class ImplVentaProductoService implements VentaProductoService {
 
     @Override
     public List<VentaProductoDescripcionDTO> findByNombreContaining(String nombre) {
-        List<VentaProducto> todos = repository.findByNombreContaining(nombre);
+        List<VentaProducto> todos = repository.findByProductoNombreContainingIgnoreCase(nombre);
         return mapear(todos);
     }
 

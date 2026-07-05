@@ -1,6 +1,5 @@
 package com.jesus.stockflow.controllers;
 
-import com.jesus.stockflow.entities.Producto;
 import com.jesus.stockflow.entities.dtos.*;
 import com.jesus.stockflow.services.interfaces.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +53,11 @@ public class ProductoController {
     @GetMapping(params = "bajoStock")
     public List<ProductoResponseDTO> findByStockIsLessThanEqual(@RequestParam boolean bajoStock){
         return service.findByStockIsLessThanEqual(bajoStock);
+    }
+
+    @GetMapping(params = "activo")
+    public List<ProductoResponseDTO> findByActivo(@RequestParam boolean activo){
+        return service.findByActivo(activo);
     }
 
 

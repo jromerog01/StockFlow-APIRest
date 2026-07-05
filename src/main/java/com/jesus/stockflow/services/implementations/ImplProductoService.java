@@ -142,7 +142,7 @@ public class ImplProductoService implements ProductoService {
 
     @Override
     public List<ProductoResponseDTO> findByNombreContainingIgnoreCase(String nombre) {
-        return mapearLista(repository.findByNombreContainingIgnoreCase(nombre));
+        return mapearLista(repository.findByActivoTrueAndNombreContainingIgnoreCase(nombre));
     }
 
     @Override
@@ -183,9 +183,14 @@ public class ImplProductoService implements ProductoService {
     @Transactional
     public List<ProductoResponseDTO> findByStockIsLessThanEqual(boolean bajoStock) {
         if (bajoStock){
-            return mapearLista(repository.findByStockIsLessThanEqual(umbralBajoStock));
+            return mapearLista(repository.findByActivoTrueAndStockLessThanEqual(umbralBajoStock));
         }
-        return mapearLista(repository.findByStockGreaterThan(umbralBajoStock));
+        return mapearLista(repository.findByActivoTrueAndStockGreaterThan(umbralBajoStock));
+    }
+
+    @Override
+    public List<ProductoResponseDTO> findByActivo(boolean activo) {
+        return mapearLista(repository.findByActivo(activo));
     }
 
 

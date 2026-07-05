@@ -10,12 +10,11 @@ import com.jesus.stockflow.exceptions.IdInvalidoException;
 import com.jesus.stockflow.repositories.MovimientoInventarioRepository;
 import com.jesus.stockflow.services.interfaces.MovimientoInventarioService;
 import com.jesus.stockflow.services.interfaces.ProductoService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,11 +44,12 @@ public class ImplMovimientoInventarioService implements MovimientoInventarioServ
                 producto.setStock(producto.getStock() + movimiento.getCantidad());
                 productoService.save(producto);
             } else {
-                if (producto.getStock() <= movimiento.getCantidad()){
+                if (producto.getStock() >= movimiento.getCantidad()){
                     producto.setStock(producto.getStock() - movimiento.getCantidad());
                     productoService.save(producto);
+                } else {
+                    throw new CamposInvalidosException("La cantidad del movimiento supera el stock disponible");
                 }
-                throw new CamposInvalidosException("La cantidad del movimiento supera el stock disponible");
             }
             MovimientoInventario mv = repository.save(movimientoInventario);
 
@@ -66,26 +66,10 @@ public class ImplMovimientoInventarioService implements MovimientoInventarioServ
         throw new CamposInvalidosException("La cantidad del movimiento debe ser mayor a 0");
     }
 
-    @Override
-    @Transactional
-    public void registrarMovimientoSalidaVerificado(MovimientoInventarioDTO movimiento){
-        if (movimiento.getCantidad() > 0){
-            Producto producto = productoService.findById(movimiento.getIdProducto());
-            MovimientoInventario movimientoInventario = new MovimientoInventario(
-                    producto,
-                    movimiento.getTipoMovimiento(),
-                    movimiento.getCantidad()
-            );
-            repository.save(movimientoInventario);
-
-        }
-
-        throw new CamposInvalidosException("La cantidad del movimiento debe ser mayor a 0");
-    }
 
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MovimientoInventarioResponseDTO> findAll() {
         return mapear((List<MovimientoInventario>) repository.findAll());
     }
@@ -109,7 +93,7 @@ public class ImplMovimientoInventarioService implements MovimientoInventarioServ
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public MovimientoInventarioResponseDTO findById(int id) {
         Optional<MovimientoInventario> movimiento = repository.findById(id);
 
@@ -130,27 +114,32 @@ public class ImplMovimientoInventarioService implements MovimientoInventarioServ
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MovimientoInventarioResponseDTO> findByNombreContaining(String nombre) {
         return mapear(repository.findByProductoNombreContainingIgnoreCase(nombre));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MovimientoInventarioResponseDTO> findBySku(String sku) {
         return mapear(repository.findByProductoSku(sku));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MovimientoInventarioResponseDTO> findByCantidadGreaterThan(int cantidad) {
         return mapear(repository.findByCantidadGreaterThanEqual(cantidad));
 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MovimientoInventarioResponseDTO> findByCantidadLessThan(int cantidad) {
         return mapear(repository.findByCantidadLessThanEqual(cantidad));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MovimientoInventarioResponseDTO> findByTipoMovimiento(TipoMovimiento tipoMovimiento) {
         return mapear(repository.findByTipoMovimiento(tipoMovimiento));
 

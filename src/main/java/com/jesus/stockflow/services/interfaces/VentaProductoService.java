@@ -1,6 +1,5 @@
 package com.jesus.stockflow.services.interfaces;
 
-import com.jesus.stockflow.entities.Producto;
 import com.jesus.stockflow.entities.Venta;
 import com.jesus.stockflow.entities.dtos.VentaProductoDescripcionDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoNombresDTO;
@@ -19,7 +18,6 @@ public interface VentaProductoService {
     List<VentaProductoDescripcionDTO> findByNombreContaining(String nombre);
     List<VentaProductoDescripcionDTO> findByCantidadGreaterThan(int cantidad);
     List<VentaProductoDescripcionDTO> findByCantidadLessThan(int cantidad);
-    void reducirStock(Producto p, int cantidad);
     void registrarMovimientoInventario(List<VentaProductoNombresDTO> productos);
 
     }

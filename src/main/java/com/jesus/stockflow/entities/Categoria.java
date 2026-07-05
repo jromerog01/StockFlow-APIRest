@@ -10,7 +10,7 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_categoria_seq")
     @SequenceGenerator(name = "id_categoria_seq", sequenceName = "id_categoria_seq", allocationSize = 1)
     @Column(name = "id_categoria")
-    private int id_categoria;
+    private int idCategoria;
 
     private String nombre;
 
@@ -21,12 +21,12 @@ public class Categoria {
     public Categoria() {
     }
 
-    public int getId_categoria() {
-        return id_categoria;
+    public int getIdCategoria() {
+        return idCategoria;
     }
 
-    public void setId_categoria(int id_categoria) {
-        this.id_categoria = id_categoria;
+    public void setIdCategoria(int id_categoria) {
+        this.idCategoria = id_categoria;
     }
 
     public String getNombre() {

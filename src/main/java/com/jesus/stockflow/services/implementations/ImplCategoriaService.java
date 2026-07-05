@@ -1,14 +1,18 @@
 package com.jesus.stockflow.services.implementations;
 
 import com.jesus.stockflow.entities.Categoria;
+import com.jesus.stockflow.entities.dtos.CategoriaDTO;
+import com.jesus.stockflow.exceptions.CamposInvalidosException;
 import com.jesus.stockflow.exceptions.IdInvalidoException;
 import com.jesus.stockflow.exceptions.NombreInvalidoException;
 import com.jesus.stockflow.repositories.CategoriaRepository;
+import com.jesus.stockflow.repositories.ProductoRepository;
 import com.jesus.stockflow.services.interfaces.CategoriaService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,20 +25,33 @@ public class ImplCategoriaService implements CategoriaService {
     @Autowired
     private CategoriaRepository repository;
 
+    @Autowired
+    private ProductoRepository productoRepository;
+
     @Override
     @Transactional
-    public List<Categoria> findAll() {
-        return (List<Categoria>) repository.findAll();
+    public List<CategoriaDTO> findAll() {
+        List<Categoria> original = (List<Categoria>) repository.findAll();
+        List<CategoriaDTO> mapeadas = new ArrayList<>();
+
+        for (Categoria c : original){
+            mapeadas.add(new CategoriaDTO(
+                    c.getIdCategoria(),
+                    c.getNombre()
+            ));
+        }
+
+        return mapeadas;
     }
 
     @Override
     @Transactional
-    public Categoria save(Categoria categoria) {
+    public CategoriaDTO save(CategoriaDTO categoria) {
         if(validarPalabra(categoria.getNombre())){
             String nombreCapitalizado = capitalizarPalabra(categoria.getNombre());
             categoria.setNombre(nombreCapitalizado);
 
-            return repository.save(categoria);
+            return mapear(repository.save(new Categoria(categoria.getNombre())));
         }
 
         throw new NombreInvalidoException("El nombre que ingresaste es invalido, no puede ser vacio");
@@ -44,7 +61,6 @@ public class ImplCategoriaService implements CategoriaService {
     @Transactional
     public Categoria findById(int id) {
         Optional<Categoria> categoria = repository.findById(id);
-
         if (categoria.isPresent()){
             return categoria.get();
         }
@@ -53,13 +69,20 @@ public class ImplCategoriaService implements CategoriaService {
                 "ninguna categoria con ese id");
     }
 
+    @Transactional
+    @Override
+    public CategoriaDTO findByIdMapeada(int id){
+        return mapear(findById(id));
+    }
+
     @Override
     @Transactional
-    public int update(int id, Categoria nombre) {
-        findById(id); //verificar que exista la categoria
+    public CategoriaDTO update(int id, CategoriaDTO nombre) {
+        Categoria buscada = findById(id); //verificar que exista la categoria
         if (validarPalabra(nombre.getNombre())){
             String nombreCapitalizado = capitalizarPalabra(nombre.getNombre());
-            return repository.update(id, nombreCapitalizado);
+            buscada.setNombre(nombreCapitalizado);
+            return mapear(repository.save(buscada));
         }
 
         throw new NombreInvalidoException("El nombre ingresado no puede estar vacio");
@@ -68,10 +91,20 @@ public class ImplCategoriaService implements CategoriaService {
 
     @Override
     @Transactional
-    public Categoria delete(int id) {
+    public CategoriaDTO delete(int id) {
         Categoria categoria = findById(id);
+
+        if (productoRepository.existsByCategoria(categoria)){
+            throw new CamposInvalidosException("No se puede eliminar la categoria '" + categoria.getNombre() +
+                    "' porque tiene productos asociados");
+        }
+
         repository.delete(categoria);
-        return categoria;
+        return mapear(categoria);
+    }
+
+    public CategoriaDTO mapear(Categoria categoria){
+        return new CategoriaDTO(categoria.getIdCategoria(), categoria.getNombre());
     }
 
 

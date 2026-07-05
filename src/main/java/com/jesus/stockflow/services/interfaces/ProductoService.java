@@ -17,6 +17,7 @@ public interface ProductoService {
     ProductoResponseDTO update(int id, ProductoUpdateRequestDTO producto);
     ProductoResponseDTO activarDesactivarProducto(int id, boolean estado);
     List<ProductoResponseDTO> findByStockIsLessThanEqual(boolean bajoStock);
+    List<ProductoResponseDTO> findByActivo(boolean activo);
 
 
 }

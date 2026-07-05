@@ -4,8 +4,7 @@ import com.jesus.stockflow.entities.dtos.MetodoPagoDTO;
 import com.jesus.stockflow.entities.dtos.VentaCompletaDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoIdDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoNombresDTO;
-import com.jesus.stockflow.entities.enums.MetodoPago;
-import com.jesus.stockflow.services.implementations.CarritoService;
+import com.jesus.stockflow.services.implementations.ImplCarritoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +15,7 @@ import java.util.List;
 public class CarritoController {
 
     @Autowired
-    private CarritoService service;
+    private ImplCarritoService service;
 
     @PostMapping
     public List<VentaProductoNombresDTO> agregarProducto(@RequestBody VentaProductoIdDTO producto){
