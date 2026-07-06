@@ -53,6 +53,7 @@ public class ImplVentaService implements VentaService {
         Venta ventaGuardada = repository.save(new Venta(venta.getMetodoPago(), subtotal, total));
         registrarProductosVenta(ventaGuardada, venta.getProductos());
         venta.setIdVenta(ventaGuardada.getIdVenta());
+        venta.setFecha(ventaGuardada.getFecha());
 
         return venta;
     }
@@ -73,7 +74,8 @@ public class ImplVentaService implements VentaService {
                     v.getMetodoPago(),
                     ventaProductoService.getProductosVenta(v.getIdVenta()),
                     v.getSubtotal(),
-                    v.getTotal()
+                    v.getTotal(),
+                    v.getFecha()
             ));
         }
 
@@ -91,7 +93,8 @@ public class ImplVentaService implements VentaService {
                     venta1.getMetodoPago(),
                     ventaProductoService.getProductosVenta(venta.get().getIdVenta()),
                     venta1.getSubtotal(),
-                    venta1.getTotal()
+                    venta1.getTotal(),
+                    venta1.getFecha()
             );
         }
 
@@ -109,7 +112,8 @@ public class ImplVentaService implements VentaService {
                     v.getMetodoPago(),
                     ventaProductoService.getProductosVenta(v.getIdVenta()),
                     v.getSubtotal(),
-                    v.getTotal()
+                    v.getTotal(),
+                    v.getFecha()
             ));
         }
 
