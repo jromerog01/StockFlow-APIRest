@@ -12,9 +12,11 @@ import com.jesus.stockflow.services.interfaces.VentaProductoService;
 import com.jesus.stockflow.services.interfaces.VentaService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +33,9 @@ public class ImplVentaService implements VentaService {
     @Autowired
     private VentaProductoService ventaProductoService;
 
+    @Value("${iva}")
+    private double iva;
+
     @Transactional
     public VentaCompletaDTO confirmarVenta(VentaCompletaDTO venta){
         // Precio sin iva
@@ -40,7 +45,7 @@ public class ImplVentaService implements VentaService {
         }
 
         // Precio con iva
-        BigDecimal total = subtotal.multiply(BigDecimal.valueOf(1.16));
+        BigDecimal total = subtotal.multiply(BigDecimal.valueOf(iva)).setScale(2, RoundingMode.HALF_UP);
 
         venta.setSubtotal(subtotal);
         venta.setTotal(total);
@@ -120,6 +125,7 @@ public class ImplVentaService implements VentaService {
             for (VentaProductoNombresDTO p : v.getProductos()){
                 if(p.getNombreProducto().toLowerCase().contains(nombre.toLowerCase())){
                     encontrados.add(v);
+                    break;
                 }
             }
         }
@@ -136,6 +142,7 @@ public class ImplVentaService implements VentaService {
             for (VentaProductoNombresDTO p : v.getProductos()){
                 if(p.getSku().equals(sku)){
                     encontrados.add(v);
+                    break;
                 }
             }
         }

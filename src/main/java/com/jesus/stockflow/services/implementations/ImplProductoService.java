@@ -167,7 +167,7 @@ public class ImplProductoService implements ProductoService {
             return mapear(buscado);
         }
 
-        throw new CamposInvalidosException("ALguno de los campos ingresados es invalido");
+        throw new CamposInvalidosException("Alguno de los campos ingresados es invalido");
     }
 
     @Override
@@ -202,15 +202,18 @@ public class ImplProductoService implements ProductoService {
     }
 
     private ProductoResponseDTO mapear(Producto producto){
-        return new ProductoResponseDTO(
-                producto.getIdProducto(),
-                producto.getCategoria().getNombre(),
-                producto.getProveedor().getNombre(),
-                producto.getSku(),
-                producto.getNombre(),
-                producto.getPrecio(),
-                producto.getStock(),
-                producto.isActivo());
+        if (producto != null){
+            return new ProductoResponseDTO(
+                    producto.getIdProducto(),
+                    producto.getCategoria().getNombre(),
+                    producto.getProveedor().getNombre(),
+                    producto.getSku(),
+                    producto.getNombre(),
+                    producto.getPrecio(),
+                    producto.getStock(),
+                    producto.isActivo());
+        }
+        throw new IdInvalidoException("No hay ningun producto con el sku ingresado");
     }
 
     private List<ProductoResponseDTO> mapearLista(List<Producto> productos){

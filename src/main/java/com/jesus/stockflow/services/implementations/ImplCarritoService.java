@@ -36,32 +36,37 @@ public class ImplCarritoService implements CarritoService {
 
         Producto productoConsultado = productoService.findById(nuevoProducto.getIdProducto());
 
+        if (productoConsultado.isActivo()){
         // Para ver si tenemos stock del producto
-        if(verificarStock(nuevoProducto, productoConsultado)){
-            for (VentaProductoNombresDTO p : carrito.getProductos()){
-                // Si ya existe el producto dentro del carrito
-                if (p.getIdProducto() == nuevoProducto.getIdProducto()){
-                    if (p.getCantidad() + nuevoProducto.getCantidad() <= productoConsultado.getStock()){
-                        p.setCantidad(p.getCantidad() + nuevoProducto.getCantidad());
-                        p.setSubtotal(BigDecimal.valueOf(p.getPrecioUnitario().doubleValue() * p.getCantidad()));
-                        return carrito.getProductos();
-                    }
-                    throw new CamposInvalidosException("No puedes agregar mas unidades del producto que quieres, no hay suficiente stock");
-                }
-            }
-            // No encontro el articulo, es decir, es un nuevo articulo
-            VentaProductoNombresDTO nuevo = new VentaProductoNombresDTO(
-                            productoConsultado.getIdProducto(),
-                            productoConsultado.getSku(),
-                            productoConsultado.getNombre(),
-                            nuevoProducto.getCantidad(),
-                            productoConsultado.getPrecio(),
-                            BigDecimal.valueOf(productoConsultado.getPrecio().doubleValue() * nuevoProducto.getCantidad()));
+            if(verificarStock(nuevoProducto, productoConsultado)){
+                for (VentaProductoNombresDTO p : carrito.getProductos()){
+                    // Si ya existe el producto dentro del carrito
+                    if (p.getIdProducto() == nuevoProducto.getIdProducto()){
+                        if (p.getCantidad() + nuevoProducto.getCantidad() <= productoConsultado.getStock()){
+                            p.setCantidad(p.getCantidad() + nuevoProducto.getCantidad());
+                            p.setSubtotal(p.getPrecioUnitario().multiply(BigDecimal.valueOf(p.getCantidad())));
 
-            carrito.getProductos().add(nuevo);
-            return carrito.getProductos();
+                            return carrito.getProductos();
+                        }
+                        throw new CamposInvalidosException("No puedes agregar mas unidades del producto que quieres, no hay suficiente stock");
+                    }
+                }
+                // No encontro el articulo, es decir, es un nuevo articulo
+                VentaProductoNombresDTO nuevo = new VentaProductoNombresDTO(
+                                productoConsultado.getIdProducto(),
+                                productoConsultado.getSku(),
+                                productoConsultado.getNombre(),
+                                nuevoProducto.getCantidad(),
+                                productoConsultado.getPrecio(),
+                                productoConsultado.getPrecio().multiply(BigDecimal.valueOf(nuevoProducto.getCantidad()))
+                );
+
+                carrito.getProductos().add(nuevo);
+                return carrito.getProductos();
+            }
+            throw new CamposInvalidosException("No hay suficiente stock del producto solicitado");
         }
-        throw new CamposInvalidosException("No hay suficiente stock del producto solicitado");
+        throw new CamposInvalidosException("No es posible agregar al carrito productos desactivados");
     }
 
     @Override
@@ -84,13 +89,13 @@ public class ImplCarritoService implements CarritoService {
     public VentaProductoNombresDTO eliminarUnidadesProducto(int id, VentaProductoIdDTO cantidad){
         for (VentaProductoNombresDTO p : carrito.getProductos()){
             if (p.getIdProducto() == id){
-                if (cantidad.getCantidad() <= p.getCantidad() && cantidad.getCantidad() >= 0){
+                if (cantidad.getCantidad() <= p.getCantidad() && cantidad.getCantidad() >= 1){
                     if(cantidad.getCantidad() == p.getCantidad()){
                         return eliminarProducto(id);
                     }
 
                     p.setCantidad(p.getCantidad() - cantidad.getCantidad());
-                    p.setSubtotal(BigDecimal.valueOf(p.getPrecioUnitario().doubleValue() * p.getCantidad()));
+                    p.setSubtotal(p.getPrecioUnitario().multiply(BigDecimal.valueOf(p.getCantidad())));
 
                     return p;
                 }
@@ -110,8 +115,7 @@ public class ImplCarritoService implements CarritoService {
                        return eliminarProducto(id);
                    }
                    p.setCantidad(cantidad.getCantidad());
-                   p.setSubtotal(BigDecimal.valueOf(p.getPrecioUnitario().doubleValue() * cantidad.getCantidad()));
-
+                   p.setSubtotal(p.getPrecioUnitario().multiply(BigDecimal.valueOf(cantidad.getCantidad())));
                    return p;
                }
                throw new CamposInvalidosException("La cantidad a actualizar debe ser menor o igual al stock disponible");
@@ -129,9 +133,12 @@ public class ImplCarritoService implements CarritoService {
     @Override
     @Transactional
     public VentaCompletaDTO confirmarVenta(MetodoPago metodoPago){
-        VentaCompletaDTO venta = ventaService.confirmarVenta(new VentaCompletaDTO(metodoPago, carrito.getProductos()));
-        vaciarCarrito();
-        return venta;
+        if (!carrito.getProductos().isEmpty()) {
+            VentaCompletaDTO venta = ventaService.confirmarVenta(new VentaCompletaDTO(metodoPago, carrito.getProductos()));
+            vaciarCarrito();
+            return venta;
+        }
+        throw new CamposInvalidosException("No puedes confirmar una venta con el carrito vacio");
     }
 
     private boolean verificarStock(VentaProductoIdDTO nuevoProducto, Producto productoConsultado){
