@@ -6,6 +6,8 @@ import com.jesus.stockflow.entities.dtos.VentaProductoIdDTO;
 import com.jesus.stockflow.entities.dtos.VentaProductoNombresDTO;
 import com.jesus.stockflow.services.implementations.ImplCarritoService;
 import com.jesus.stockflow.services.interfaces.CarritoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,11 +15,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/carrito")
+@Tag(name = "Carrito")
 public class CarritoController {
 
     @Autowired
     private CarritoService service;
 
+    @Operation(summary = "Agrega productos al carrito de compras", description = "hola que tal")
     @PostMapping
     public List<VentaProductoNombresDTO> agregarProducto(@RequestBody VentaProductoIdDTO producto){
         return service.agregarProducto(producto);
