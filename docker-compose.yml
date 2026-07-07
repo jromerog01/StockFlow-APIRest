@@ -1,0 +1,13 @@
+services:
+  stock-flow-api:
+    container_name: "stockFlowAPI"
+    image: mi-primera-imagen:latest
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    restart: unless-stopped
